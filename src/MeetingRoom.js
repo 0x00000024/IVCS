@@ -67,8 +67,11 @@ class MeetingRoom extends React.Component {
     this.userList.forEach((user) => {
       const userId = user.userId;
       if (userId === this.userId) return;
-      this.rtcPeerConn[userId].onaddstream = (event) => {
-        this.videoBoxManagerRef.current.updateMediaStream(userId, event.stream);
+
+      this.rtcPeerConn[userId].ontrack = (event) => {
+        console.log('event in ontrack', event);
+        this.videoBoxManagerRef
+            .current.updateMediaStream(userId, event.streams[0]);
       };
     });
   }
@@ -187,10 +190,10 @@ class MeetingRoom extends React.Component {
             this.userList.forEach((user) => {
               const userId = user.userId;
               if (userId === this.userId) return;
-              this.rtcPeerConn[userId].addStream(this.localStream);
-              // for (const track of this.localStream.getTracks()) {
-              //   this.rtcPeerConn[userId].addTrack(track, this.localStream);
-              // }
+
+              for (const track of this.localStream.getTracks()) {
+                this.rtcPeerConn[userId].addTrack(track, this.localStream);
+              }
             });
           });
     });
@@ -218,7 +221,7 @@ class MeetingRoom extends React.Component {
       <Container className={classes.meetingRoom}>
 
         <Typography align="center" color="primary" variant="h2">
-            IVCS
+          IVCS
         </Typography>
 
         <Container className={classes.joinNowContainer}>
@@ -229,7 +232,7 @@ class MeetingRoom extends React.Component {
           />
           <Button variant="outlined" color="primary" onClick={this.joinRoom}
             className={classes.joinNowButton}>
-              Join Now
+            Join Now
           </Button>
         </Container>
 
