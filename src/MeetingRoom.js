@@ -190,10 +190,10 @@ class MeetingRoom extends React.Component {
             this.userList.forEach((user) => {
               const userId = user.userId;
               if (userId === this.userId) return;
-
-              for (const track of this.localStream.getTracks()) {
-                this.rtcPeerConn[userId].addTrack(track, this.localStream);
-              }
+              this.rtcPeerConn[userId].addStream(this.localStream);
+              // for (const track of this.localStream.getTracks()) {
+              //   this.rtcPeerConn[userId].addTrack(track, this.localStream);
+              // }
             });
           });
     });
@@ -221,7 +221,7 @@ class MeetingRoom extends React.Component {
       <Container className={classes.meetingRoom}>
 
         <Typography align="center" color="primary" variant="h2">
-          IVCS
+            IVCS
         </Typography>
 
         <Container className={classes.joinNowContainer}>
@@ -232,7 +232,7 @@ class MeetingRoom extends React.Component {
           />
           <Button variant="outlined" color="primary" onClick={this.joinRoom}
             className={classes.joinNowButton}>
-            Join Now
+              Join Now
           </Button>
         </Container>
 
