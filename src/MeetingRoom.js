@@ -7,7 +7,7 @@ import VideoBoxManager from './VideoBoxManager';
 import faker from 'faker';
 import withStyles from '@material-ui/styles/withStyles';
 import io from 'socket.io-client';
-
+import MediaController from './MediaController';
 const styles = () => ({
   meetingRoom: {
     margin: 'auto',
@@ -52,14 +52,37 @@ class MeetingRoom extends React.Component {
     this.rtcPeerConn = {};
     this.userList = [];
     this.userId = null;
-
+    this.lastUser = null;
+    this.camPermission = false;
+    this.micPermission = false;
     this.state = {
       video: false,
       audio: false,
       username: faker.internet.userName(),
     };
+    this.getPermissions();
+    this.joinRoom = this.joinRoom.bind(this);
+    this.updateState = this.updateState.bind(this);
+  }
+  updateState(newState) {
+    console.log('In updateState State:', newState.video);
+    this.setState({video: newState.video});
+    console.log(this.state.video);
   }
 
+  getPermissions = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({video: true})
+          .then(() => this.camPermission = true)
+          .catch(() => this.camPermission = false);
+
+      await navigator.mediaDevices.getUserMedia({audio: true})
+          .then(() => this.micPermission = true)
+          .catch(() => this.micPermission = false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
   changeUsername = (e) => this.setState({username: e.target.value});
 
   getRemoteMedia = async () => {
@@ -162,57 +185,96 @@ class MeetingRoom extends React.Component {
     });
   }
 
-  connectServer = () => {
-    this.socket = io(signalingServerUrl);
+    connectServer = () => {
+      this.socket = io(signalingServerUrl);
 
-    this.socket.on('connect', () => {
-      this.userId = this.socket.id;
+      this.socket.on('connect', () => {
+        this.userId = this.socket.id;
+        if (this.userList.length === 0) {
+          this.lastUser = this.userId;
+          this.videoBoxManagerRef.current
+              .updateMediaStream(this.userId, this.localStream);
+        }
+        // first time the local userList is empty ,
+        console.log('UserIdCheck:', this.userId);
+        console.log('This userList: ', this.userList);
+        // current localStream => this.localStream;
+        // a new stream add an video window again
 
-      this.videoBoxManagerRef.current
-          .updateMediaStream(this.userId, this.localStream);
 
-      this.socket.emit('join room',
-          this.roomId, this.userId, this.state.username);
+        this.socket.emit('join room',
+            this.roomId, this.userId, this.state.username);
 
-      this.socket.on('signal from server', (data) => {
-        this.receiveSignalFromServer(data);
-      });
+        this.socket.on('signal from server', (data) => {
+          this.receiveSignalFromServer(data);
+        });
 
-      this.socket.on('user joined',
-          (joinedUserId, joinedUserName, userList) => {
-            this.userList = userList;
+        this.socket.on('user joined',
+            (joinedUserId, joinedUserName, userList) => {
+              this.userList = userList;
 
-            this.sendSignalToServer();
+              console.log('Connect userList: ', this.userList);
+              this.sendSignalToServer();
+              this.getRemoteMedia().catch((e) => console.log(e));
 
-            this.getRemoteMedia().catch((e) => console.log(e));
+              const lastUserId = this.userList[this.userList.length - 1].userId;
 
-            // TODO: Change addStream to addTrack
-            this.userList.forEach((user) => {
-              const userId = user.userId;
-              if (userId === this.userId) return;
-              this.rtcPeerConn[userId].addStream(this.localStream);
-              // for (const track of this.localStream.getTracks()) {
-              //   this.rtcPeerConn[userId].addTrack(track, this.localStream);
-              // }
+              if (lastUserId === this.userId) {
+                console.log('LastUserCheck: ', lastUserId);
+                this.userList.forEach((user) => {
+                  const userId = user.userId;
+                  console.log('Start Loop Current User:', user.userId);
+                  if (userId === this.userId) return;
+                  // console.log('Loop Current User:', user.userId);
+                  // console.log('Other User ID: ', userId);
+                  // add B to A in B client (C to A, B in C)
+                  for (const track of this.localStream.getTracks()) {
+                    this.rtcPeerConn[userId].addTrack(track, this.localStream);
+                  }
+                });
+              } else { // add A to B in A client (A , B to C in A, B)
+                console.log('LastUser ID: ', lastUserId);
+                for (const track of this.localStream.getTracks()) {
+                  this.rtcPeerConn[lastUserId]
+                      .addTrack(track, this.localStream);
+                }
+              }
             });
-          });
+      });
+    }
+
+  stopVideoOnly = () => {
+    this.localStream.getTracks().forEach( (track) => {
+      track.stop();
     });
   }
 
   getLocalMedia = async () => {
+    // this.setState({video: updateState.video});
+    console.log('Call the getLocalMedia:', this.state.video);
+    console.log('video & cam:', this.state.video, this.camPermission);
+    console.log('audio & mir:', this.state.audio, this.micPermission);
+    console.log('After Check video&mir: ', this.state.video);
     // get a local stream, show it in our video tag and add it to be sent
     await navigator.mediaDevices
-        .getUserMedia({video: this.state.video})
+        .getUserMedia({video: this.state.video,
+        })
         .then((stream) => {
           this.localStream = stream;
         })
         .catch((e) => console.log(e));
+    console.log('Current State int LocalMedia in meetingRoom:',
+        this.state.video);
+    this.connectServer();
   }
 
-  joinRoom = () => this.setState({video: true}, () => {
-    this.getLocalMedia()
-        .then(() => this.connectServer())
-        .catch((e) => console.log(e));
+  joinRoom = () => this.setState({video: this.camPermission,
+    audio: this.micPermission},
+  () => {
+    // const {current} = this.state;
+    this.getLocalMedia();
+    // .then(() => this.connectServer())
+    // .catch((e) => console.log(e));
   });
 
   render() {
@@ -230,14 +292,22 @@ class MeetingRoom extends React.Component {
             placeholder="username"
             value={this.state.username}
           />
-          <Button variant="outlined" color="primary" onClick={this.joinRoom}
+          <Button variant="outlined" color="primary"
+            onClick={this.joinRoom}
             className={classes.joinNowButton}>
               Join Now
           </Button>
         </Container>
 
         <VideoBoxManager ref={this.videoBoxManagerRef} />
-
+        <MediaController
+          // transform always true
+          video={this.state.video}
+          audio={this.state.audio}
+          updateState={this.updateState}
+          getLocalMedia={this.getLocalMedia}
+          stopVideoOnly={this.stopVideoOnly}
+        />
       </Container>
     );
   }

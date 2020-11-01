@@ -26,11 +26,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="98d3a263-4a84-4b20-a0db-d2d51aee3bfe" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/MediaController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Carousel.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Carousel.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HomePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/HomePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MeetingLink.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/MeetingLink.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MeetingRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/MeetingRoom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/VideoBoxManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/VideoBoxManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +46,9 @@
         <option value="JavaScript File" />
       </list>
     </option>
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="BRANCH" value="dev" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -111,6 +117,8 @@
       <workItem from="1601913759573" duration="7406000" />
       <workItem from="1601944215363" duration="1328000" />
       <workItem from="1602328560783" duration="18860000" />
+      <workItem from="1604168300840" duration="1706000" />
+      <workItem from="1604203408250" duration="383000" />
     </task>
     <task id="LOCAL-00001" summary="Update README.md">
       <created>1601914784873</created>
@@ -242,25 +250,29 @@
       <screen x="-229" y="-1080" width="1920" height="1080" />
     </state>
     <state x="155" y="-911" key="DiffContextDialog/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1602178475465" />
-    <state width="1899" height="234" key="GridCell.Tab.0.bottom" timestamp="1602344849135">
-      <screen x="-229" y="-1080" width="1920" height="1080" />
+    <state width="1515" height="73" key="GridCell.Tab.0.bottom" timestamp="1604170007465">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1899" height="234" key="GridCell.Tab.0.bottom/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1602344849135" />
+    <state width="1515" height="73" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1604170007465" />
     <state width="1899" height="305" key="GridCell.Tab.0.bottom/0.23.1440.795/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1601913806597" />
-    <state width="1899" height="234" key="GridCell.Tab.0.center" timestamp="1602344849133">
-      <screen x="-229" y="-1080" width="1920" height="1080" />
+    <state width="1515" height="73" key="GridCell.Tab.0.center" timestamp="1604170007465">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1899" height="234" key="GridCell.Tab.0.center/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1602344849133" />
+    <state width="1515" height="73" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1604170007465" />
     <state width="1899" height="305" key="GridCell.Tab.0.center/0.23.1440.795/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1601913806586" />
-    <state width="1899" height="234" key="GridCell.Tab.0.left" timestamp="1602344849133">
-      <screen x="-229" y="-1080" width="1920" height="1080" />
+    <state width="1515" height="73" key="GridCell.Tab.0.left" timestamp="1604170007465">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1899" height="234" key="GridCell.Tab.0.left/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1602344849133" />
+    <state width="1515" height="73" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1604170007465" />
     <state width="1899" height="305" key="GridCell.Tab.0.left/0.23.1440.795/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1601913806572" />
-    <state width="1899" height="234" key="GridCell.Tab.0.right" timestamp="1602344849134">
-      <screen x="-229" y="-1080" width="1920" height="1080" />
+    <state width="1515" height="73" key="GridCell.Tab.0.right" timestamp="1604170007465">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1899" height="234" key="GridCell.Tab.0.right/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1602344849134" />
+    <state width="1515" height="73" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1604170007465" />
     <state width="1899" height="305" key="GridCell.Tab.0.right/0.23.1440.795/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1601913806591" />
     <state width="1899" height="376" key="GridCell.Tab.1.bottom" timestamp="1601923168544">
       <screen x="-229" y="-1080" width="1920" height="1080" />
@@ -310,6 +322,14 @@
       <screen x="-229" y="-1080" width="1920" height="1080" />
     </state>
     <state width="1899" height="376" key="GridCell.Tab.3.right/0.0.1440.900/-229.-1080.1920.1080@-229.-1080.1920.1080" timestamp="1601923168548" />
+    <state x="143" y="60" key="MergeDialog" timestamp="1604138665918">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="143" y="60" key="MergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1604138665918" />
+    <state x="534" y="201" key="MultipleFileMergeDialog" timestamp="1604138665929">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="534" y="201" key="MultipleFileMergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1604138665929" />
     <state x="225" y="-827" key="SettingsEditor" timestamp="1601916653799">
       <screen x="-229" y="-1080" width="1920" height="1080" />
     </state>
