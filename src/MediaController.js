@@ -17,34 +17,10 @@ export default class MediaController extends Component {
       video: this.props.state,
       audio: this.props.state,
     };
-    // this.camPermission = false;
-    // this.micPermission = false;
-    // this.joinRoom = this.joinRoom.bind(this);
-    this.handleVideo = this.handleVideo.bind(this);
-    // this.getPermissions = this.getPermissions.bind(this);
-  }
-  // eslint-disable-next-line camelcase
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   if (nextProps.location.state !== undefined) {
-  //     this.setState({
-  //       video: nextProps.location.state.video,
-  //     });
-  //   }
-  // }
 
-  // getPermissions = async () => {
-  //   try {
-  //     await navigator.mediaDevices.getUserMedia({video: true})
-  //         .then(() => this.camPermission = true)
-  //         .catch(() => this.camPermission = false);
-  //
-  //     await navigator.mediaDevices.getUserMedia({audio: true})
-  //         .then(() => this.micPermission = true)
-  //         .catch(() => this.micPermission = false);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
+    this.handleVideo = this.handleVideo.bind(this);
+  }
+
 
     handleVideo = () => this.setState({video: !this.props.video},
         () => {
