@@ -26,8 +26,7 @@ const styles = () => ({
   },
 });
 
-// const signalingServerUrl = 'https://eny.li/';
-const signalingServerUrl = 'http://localhost:3001';
+const signalingServerUrl = 'http://127.0.0.1:3001';
 
 const RTCIceServerConfig = {
   iceServers: [
@@ -46,24 +45,38 @@ class MeetingRoom extends React.Component {
     super(props);
 
     this.localStream = null;
-    this.localVideoTrack = null;
-    this.localAudioTrack = null;
     this.videoBoxManagerRef = React.createRef();
 
     this.roomId = window.location.pathname.substr(1);
     this.socket = null;
     this.rtcPeerConn = {};
-    this.sender = [];
+    this.sender = {};
     this.userList = [];
     this.userId = null;
-
+    this.camPermission = false;
+    this.micPermission = false;
     this.state = {
-      joined: false,
       video: false,
       audio: false,
       callEnd: false,
       username: faker.internet.userName(),
     };
+    this.getPermissions();
+  }
+
+  // get the permissions of devices
+  getPermissions = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({video: true})
+          .then(() => this.camPermission = true)
+          .catch(() => this.camPermission = false);
+
+      await navigator.mediaDevices.getUserMedia({audio: true})
+          .then(() => this.micPermission = true)
+          .catch(() => this.micPermission = false);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   changeUsername = (e) => this.setState({username: e.target.value});
@@ -73,16 +86,11 @@ class MeetingRoom extends React.Component {
     this.userList.forEach((user) => {
       const userId = user.userId;
       if (userId === this.userId) return;
-      this.rtcPeerConn[userId].ontrack = (event) => {
-        this.videoBoxManagerRef.current.handleTrack(userId, event.track);
-
-        event.streams[0].onremovetrack = (event) => {
-          if (event.track.kind === 'video') {
-            this.videoBoxManagerRef.current.stopStreamedVideo(userId);
-          }
-          if (event.track.kind === 'audio') {
-            this.videoBoxManagerRef.current.stopStreamedAudio(userId);
-          }
+      this.rtcPeerConn[userId].onaddstream = (event) => {
+        this.videoBoxManagerRef.current.addVideoBox(userId, event.stream);
+        event.stream.onremovetrack = () => {
+          console.log('on remove track fired');
+          this.videoBoxManagerRef.current.stopStreamedVideo(userId);
         };
       };
     });
@@ -180,7 +188,7 @@ class MeetingRoom extends React.Component {
       this.userId = this.socket.id;
 
       this.videoBoxManagerRef.current
-          .handleTrack(this.userId, this.localVideoTrack);
+          .addVideoBox(this.userId, this.localStream);
 
       this.socket.emit('join room',
           this.roomId, this.userId, this.state.username);
@@ -190,6 +198,7 @@ class MeetingRoom extends React.Component {
       });
 
       this.socket.on('user left', (userId) => {
+        console.log('get user left!', userId);
         this.videoBoxManagerRef.current.removeVideoBox(userId);
       });
 
@@ -202,51 +211,49 @@ class MeetingRoom extends React.Component {
             this.getRemoteMedia().catch((e) => console.log(e));
 
             const lastUserId = this.userList[this.userList.length - 1].userId;
-            // Add stream to all connection
             if (lastUserId === this.userId) {
-              this.userList.forEach((user) => {
-                const userId = user.userId;
-                if (userId === this.userId) return;
-
-                this.sender[userId] = {};
-                this.sender[userId]['audioTrack'] = this.rtcPeerConn[userId]
-                    .addTrack(this.localAudioTrack, this.localStream);
-                this.sender[userId]['videoTrack'] = this.rtcPeerConn[userId]
-                    .addTrack(this.localVideoTrack, this.localStream);
-              });
+              this.addNewTrack();
             } else {
-            // Only add stream to the connection of the last newest user
-              this.sender[lastUserId] = {};
-              this.sender[lastUserId]['audioTrack'] =
-                this.rtcPeerConn[lastUserId]
-                    .addTrack(this.localAudioTrack, this.localStream);
-              this.sender[lastUserId]['videoTrack'] =
-                  this.rtcPeerConn[lastUserId]
-                      .addTrack(this.localVideoTrack, this.localStream);
+              for (const track of this.localStream.getTracks()) {
+                this.sender[lastUserId] = this.rtcPeerConn[lastUserId]
+                    .addTrack(track, this.localStream);
+              }
             }
           });
     });
   }
 
   getLocalMedia = async () => {
+    console.log('Current Video & Audio State:',
+        this.state.video, this.state.audio);
     // Get a local stream, show it in our video tag and add it to be sent
     await navigator.mediaDevices
-        .getUserMedia({video: true, audio: true})
+        .getUserMedia({video: this.state.video,
+          audio: this.state.audio})
         .then((stream) => {
           this.localStream = stream;
-          this.localVideoTrack = stream.getVideoTracks()[0];
-          this.localAudioTrack = stream.getAudioTracks()[0];
         })
         .catch((e) => console.log(e));
   }
 
-  joinRoom = () => this.setState({joined: true}, () => {
+  joinRoom = () => this.setState({video: this.camPermission,
+    audio: this.micPermission}, () => {
     this.getLocalMedia()
         .then(() => this.connectServer())
         .catch((e) => console.log(e));
   });
 
-  resendSdpSignalToServer = () => {
+  // remove Track from others
+  removeAllTrack = () =>{
+    this.userList.forEach((user) => {
+      const userId = user.userId;
+      if (userId === this.userId) return;
+      this.rtcPeerConn[userId].removeTrack(this.sender[userId]);
+    });
+  }
+
+  // send sdp signal to others except local
+  sendSdpSignal = () =>{
     this.userList.forEach((user) => {
       const userId = user.userId;
       if (userId === this.userId) return;
@@ -261,64 +268,67 @@ class MeetingRoom extends React.Component {
     });
   }
 
+  // add track to others except local
+  addNewTrack = () =>{
+    this.userList.forEach((user) => {
+      const userId = user.userId;
+      if (userId === this.userId) return;
+      for (const track of this.localStream.getTracks()) {
+        this.sender[userId] = this.rtcPeerConn[userId]
+            .addTrack(track, this.localStream);
+      }
+    });
+  }
+
+  // Switch camera
   onHandleVideo = (localVideoState) => {
+    this.removeAllTrack();
     // Turn on camera
     if (localVideoState === true) {
+      this.setState({video: localVideoState}, () => {
+        this.getLocalMedia()
+            .then(() => {
+              this.videoBoxManagerRef.current
+                  .addVideoBox(this.userId, this.localStream);
+              this.addNewTrack();
+            })
+            .catch((e) => console.log(e));
+      });
+    }
+    // Turn off camera
+    if (localVideoState === false) {
+      this.setState({video: localVideoState}, () => {
+        this.getLocalMedia()
+            .then(() => {
+              this.videoBoxManagerRef.current
+                  .stopStreamedVideo(this.userId);
+              this.addNewTrack();
+            })
+            .catch((e) => console.log(e));
+      });
+    }
+    // Resend sdp after switching camera
+    this.sendSdpSignal();
+  }
+
+  // Switch microphone
+  onHandleAudio = (localAudioState) => {
+    console.log('On handle Audio state:', this.state.audio);
+    this.removeAllTrack();
+
+    this.setState({audio: localAudioState}, () => {
       this.getLocalMedia()
           .then(() => {
             this.videoBoxManagerRef.current
-                .handleTrack(this.userId, this.localVideoTrack);
-            this.userList.forEach((user) => {
-              const userId = user.userId;
-              if (userId === this.userId) return;
-              this.sender[userId]['videoTrack'] = this.rtcPeerConn[userId]
-                  .addTrack(this.localVideoTrack, this.localStream);
-            });
+                .addVideoBox(this.userId, this.localStream);
+            this.addNewTrack();
           })
           .catch((e) => console.log(e));
-    }
-
-    // Turn off camera
-    if (localVideoState === false) {
-      this.videoBoxManagerRef.current.stopStreamedVideo(this.userId);
-      this.userList.forEach((user) => {
-        const userId = user.userId;
-        if (userId === this.userId) return;
-        this.rtcPeerConn[userId].removeTrack(this.sender[userId]['videoTrack']);
-      });
-    }
-
-    this.resendSdpSignalToServer();
+    });
+    // Resend sdp after switching microphone
+    this.sendSdpSignal();
   }
 
-  onHandleAudio = (localAudioState) => {
-    // Turn on microphone
-    if (localAudioState === true) {
-      this.getLocalMedia()
-          .then(() => {
-            this.userList.forEach((user) => {
-              const userId = user.userId;
-              if (userId === this.userId) return;
-              this.sender[userId]['audioTrack'] = this.rtcPeerConn[userId]
-                  .addTrack(this.localAudioTrack, this.localStream);
-            });
-          })
-          .catch((e) => console.log(e));
-    }
-
-    // Turn off microphone
-    if (localAudioState === false) {
-      this.videoBoxManagerRef.current.stopStreamedAudio(this.userId);
-      this.userList.forEach((user) => {
-        const userId = user.userId;
-        if (userId === this.userId) return;
-
-        this.rtcPeerConn[userId].removeTrack(this.sender[userId]['audioTrack']);
-      });
-    }
-
-    this.resendSdpSignalToServer();
-  }
 
   callEnd = () => {
     Object.keys(this.rtcPeerConn).forEach((k) => this.rtcPeerConn[k].close());
@@ -334,29 +344,27 @@ class MeetingRoom extends React.Component {
             IVCS
         </Typography>
 
-        {
-          !this.state.joined ?
-            <Container className={classes.joinNowContainer}>
-              <Input
-                onChange={(e) => this.changeUsername(e)}
-                placeholder="username"
-                value={this.state.username}
-              />
-              <Button variant="outlined" color="primary" onClick={this.joinRoom}
-                className={classes.joinNowButton}>
-                    Join Now
-              </Button>
-            </Container> :
-          null
-        }
+        <Container className={classes.joinNowContainer}>
+          <Input
+            onChange={(e) => this.changeUsername(e)}
+            placeholder="username"
+            value={this.state.username}
+          />
+          <Button variant="outlined" color="primary" onClick={this.joinRoom}
+            className={classes.joinNowButton}>
+              Join Now
+          </Button>
+        </Container>
 
         <VideoBoxManager
           ref={this.videoBoxManagerRef}
         />
 
         <MediaController
+          video = {this.state.video}
+          audio = {this.state.audio}
           onHandleVideo={this.onHandleVideo}
-          onHandleAudio={this.onHandleAudio}
+          onHandleAudio = {this.onHandleAudio}
           onCallEnd={this.callEnd}
         />
 

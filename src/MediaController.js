@@ -27,41 +27,41 @@ class MediaController extends React.Component {
     };
   }
 
-  handleVideo = () => {
-    const reversedState = !this.state.localVideo;
-    this.setState({localVideo: reversedState});
-    this.props.onHandleVideo(reversedState);
-  }
+    handleVideo = () => {
+      const reversedState = !this.props.video;
+      this.setState({localVideo: reversedState});
+      this.props.onHandleVideo(reversedState);
+    }
 
-  handleAudio = () => {
-    const reversedState = !this.state.localAudio;
-    this.setState({localAudio: reversedState});
-    this.props.onHandleAudio(reversedState);
-  }
+    handleAudio = () => {
+      const reversedState = !this.props.audio;
+      this.setState({localAudio: reversedState});
+      this.props.onHandleAudio(reversedState);
+    }
 
-  render() {
-    return (
-      <Container className={this.classes.mediaController}>
+    render() {
+      return (
+        <Container className={this.classes.mediaController}>
 
-        <IconButton onClick={this.handleVideo}>
-          {
-            !this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
-          }
-        </IconButton>
+          <IconButton onClick={this.handleVideo}>
+            {
+            this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
+            }
+          </IconButton>
 
-        <IconButton>
-          <CallEndIcon onClick={this.props.onCallEnd}/>
-        </IconButton>
+          <IconButton>
+            <CallEndIcon onClick={this.props.onCallEnd}/>
+          </IconButton>
 
-        <IconButton onClick={this.handleAudio}>
-          {
-            !this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
-          }
-        </IconButton>
+          <IconButton onClick={this.handleAudio}>
+            {
+                        this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
+            }
+          </IconButton>
 
-      </Container>
-    );
-  }
+        </Container>
+      );
+    }
 }
 
 export default withStyles(styles)(MediaController);
