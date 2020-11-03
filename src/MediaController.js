@@ -1,71 +1,67 @@
-import React, {Component} from 'react';
+import React from 'react';
+import withStyles from '@material-ui/styles/withStyles';
+import Container from '@material-ui/core/Container';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-// import VideoBoxManager from './VideoBoxManager';
-import {IconButton} from '@material-ui/core';
-// import Container from '@material-ui/core/Container';
-import PropTypes from 'prop-types';
-// import MeetingRoom from './MeetingRoom';
+import IconButton from '@material-ui/core/IconButton';
 
-export default class MediaController extends Component {
+const styles = () => ({
+  mediaController: {
+    background: 'whitesmoke',
+    textAlign: 'center',
+  },
+});
+
+class MediaController extends React.Component {
   constructor(props) {
     super(props);
-    this.state ={
-      video: this.props.state,
-      audio: this.props.state,
-    };
 
-    this.handleVideo = this.handleVideo.bind(this);
+    this.classes = this.props.classes;
+
+    this.state ={
+      localVideo: true,
+      localAudio: true,
+    };
   }
 
+    handleVideo = () => {
+      const reversedState = !this.props.video;
+      this.setState({localVideo: reversedState});
+      this.props.onHandleVideo(reversedState);
+    }
 
-    handleVideo = () => this.setState({video: !this.props.video},
-        () => {
-          console.log('This State in handle:', this.state.video);
-          const {video} = this.state;
-          console.log('Props State Before in handle: ', this.props.video);
-          console.log('MC this state after changed in handle: ', video);
-          const current = {video};
-          this.props.updateState(current);
-          // .then(()=>this.props.stopVideoOnly())
-          this.props.getLocalMedia(current);
-          // .catch((e) => console.log(e));
-        })
-
-    handleAudio = () => this.setState({audio: !this.state.audio},
-        () => this.props.getLocalMedia())
-
-    handleCall = () =>{
-      try {
-        const tracks = this.localStream.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
-      } catch (e) {}
-      window.location.href = '/';
+    handleAudio = () => {
+      const reversedState = !this.props.audio;
+      this.setState({localAudio: reversedState});
+      this.props.onHandleAudio(reversedState);
     }
 
     render() {
       return (
-        <div className="btn-menu" style={{backgroundColor: 'whitesmoke',
-          color: 'whitesmoke', textAlign: 'center'}}>
-          <IconButton style={{color: '#424242'}} onClick={this.handleVideo}>
-            {(this.state.video === true)?<VideocamIcon/>:<VideocamOffIcon/>}
+        <Container className={this.classes.mediaController}>
+
+          <IconButton onClick={this.handleVideo}>
+            {
+                        this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
+            }
           </IconButton>
-          <IconButton style={{color: '#f44336'}}>
-            <CallEndIcon />
+
+          <IconButton>
+            <CallEndIcon onClick={this.props.onCallEnd}/>
           </IconButton>
-          <IconButton style={{color: '#424242'}} onClick={this.handleAudio}>
-            {(this.state.audio === true)?<MicIcon/>:<MicOffIcon/>}
+
+          <IconButton onClick={this.handleAudio}>
+            {
+                        this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
+            }
           </IconButton>
-        </div>
+
+        </Container>
       );
     }
 }
 
-MediaController.propTypes = {
-  getLocalMedia: PropTypes.func.isRequired,
-  // stopVideoOnly: PropTypes.func.isRequired,
-  updateState: PropTypes.func.isRequired,
-};
+export default withStyles(styles)(MediaController);
