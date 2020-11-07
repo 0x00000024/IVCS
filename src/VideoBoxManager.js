@@ -26,29 +26,45 @@ class VideoBoxManager extends React.Component {
     this.videoBoxes = [];
 
     this.state = {
-      newVideoBox: false,
+      addVideoBox: false,
     };
   }
 
-  newVideoBox = (userId, videoTrack) =>{
-    this.videoBoxes[userId] = React.createRef();
+  stopStreamedVideo = (userId) => {
+    this.videoBoxRefs[userId].current.removeVideoTrack();
+  }
+
+  stopStreamedAudio = (userId) => {
+    this.videoBoxRefs[userId].current.removeAudioTrack();
+  }
+
+  removeVideoBox = (userId) => {
+    this.videoBoxRefs[userId].current.dismiss();
+  }
+
+  addVideoBox = (userId) => {
+    this.videoBoxRefs[userId] = React.createRef();
 
     this.videoBoxes.push(<VideoBox
-      ref={this.videoBoxes[userId]}
+      ref={this.videoBoxRefs[userId]}
       userId={userId}
-      videoTrack={videoTrack}
     />);
 
-    this.setState({newVideoBox: true});
+    this.setState({addVideoBox: true});
+  }
 
-    console.log('check this.videobox', this.videoBoxes);
+  handleTrack = (userId, track) => {
+    if (!this.videoBoxRefs[userId]) {
+      this.addVideoBox(userId);
+    }
+    this.videoBoxRefs[userId].current.addTrack(track);
   }
 
   render() {
     return (
       <Container className={this.classes.videoBoxManager}>
         {
-          this.state.newVideoBox ? this.videoBoxes : null
+            this.state.addVideoBox ? this.videoBoxes : null
         }
       </Container>
     );
@@ -56,7 +72,8 @@ class VideoBoxManager extends React.Component {
 }
 
 VideoBoxManager.propTypes = {
-  newVideoBox: PropTypes.func,
+  addVideoBox: PropTypes.func,
+  removeVideoBox: PropTypes.func,
 };
 
 export default withStyles(styles)(VideoBoxManager);
