@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import VideoCallRoundedIcon from '@material-ui/icons/VideoCallRounded';
 import {withStyles} from '@material-ui/styles';
 
 const styles = () => ({
@@ -9,14 +10,26 @@ const styles = () => ({
     background: 'white',
     width: '35%',
     height: 'auto',
-    margin: '10%',
+    margin: '5% 10%',
     float: 'left',
   },
   meetingLinkTitle: {
     margin: 0,
     fontWeight: 'bold',
-    paddingRight: '50px',
+    // paddingRight: '50px',
   },
+  button: {
+    position: 'relative',
+    margin: '10px',
+  },
+  slogan: {
+    fontSize: '1.25rem',
+    fontWeight: '400',
+    letterSpacing: 0,
+    lineHeight: '2.25rem',
+    paddingBottom: '.5em',
+  },
+
 });
 
 class MeetingLink extends React.Component {
@@ -43,7 +56,6 @@ class MeetingLink extends React.Component {
       }
     }
 
-
     return str.slice(0, 3) + '-' + str.slice(3, 7) +
         '-' + str.slice(7, 10);
   }
@@ -61,10 +73,23 @@ class MeetingLink extends React.Component {
     const {classes} = this.props;
     return (
       <Container className={classes.meetingLink}>
-        <Typography component="p" className={classes.meetingLinkTitle}>
+        <Container>
+          <Typography variant="h5" align="justify"
+            className={classes.slogan}>
+            Let&apos;s meet at IVCS and make remote work more efficient.
+          </Typography>
+          <Typography variant="h6" align="center"
+            className={classes.slogan}>
+            Happy every encounter.
+          </Typography>
+        </Container>
+        <Typography variant="h6" align="center"
+          className={classes.meetingLinkTitle}>
             Start or join a meeting
         </Typography>
-        <Button onClick={this.johnMeeting}>Join Meeting</Button>
+        <Button variant="contained" color="primary" className={classes.button}
+          startIcon = {<VideoCallRoundedIcon />}
+          onClick={this.johnMeeting}>Join Meeting</Button>
       </Container>
     );
   }

@@ -8,21 +8,45 @@ import faker from 'faker';
 import withStyles from '@material-ui/styles/withStyles';
 import io from 'socket.io-client';
 import MediaController from './MediaController';
+import TopNavigation from './TopNavigation';
+import VoiceChatOutlinedIcon from '@material-ui/icons/VoiceChatOutlined';
 
 const styles = () => ({
+  mainRoom: {
+    position: 'fixed',
+    left: '0px',
+    top: '0px',
+    margin: 0,
+    width: '100%',
+    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    overflow: 'hidden',
+  },
   meetingRoom: {
-    margin: 'auto',
-    marginTop: '100px',
-    backgroundColor: '#e2b0b0',
-    width: '50%',
-    height: '50%',
-    minWidth: '400px',
+    position: 'absolute',
+    margin: 0,
+    backgroundColor: '#111',
+    width: '100%',
+    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
   joinNowContainer: {
-    margin: '30px',
+    position: 'relative',
+    background: '#fff',
+    margin: '50px',
+    width: '35%',
+    height: '20%',
   },
   joinNowButton: {
+    position: 'relative',
     margin: 'auto',
+    // margin: '20px 10px',
+  },
+  inputText: {
+    position: 'relative',
+    margin: '20px 10px',
   },
 });
 
@@ -328,38 +352,41 @@ class MeetingRoom extends React.Component {
   render() {
     const {classes} = this.props;
     return (
-      <Container className={classes.meetingRoom}>
+      <Container disableGutters='true' className={classes.mainRoom}>
+        <TopNavigation/>
+        <Container disableGutters='true' className={classes.meetingRoom}>
 
-        <Typography align="center" color="primary" variant="h2">
+          <Typography align="center" color="primary" variant="h2">
             IVCS
-        </Typography>
+          </Typography>
 
-        {
+          {
           !this.state.joined ?
             <Container className={classes.joinNowContainer}>
               <Input
                 onChange={(e) => this.changeUsername(e)}
                 placeholder="username"
-                value={this.state.username}
+                value={this.state.username} className={classes.inputText}
               />
-              <Button variant="outlined" color="primary" onClick={this.joinRoom}
-                className={classes.joinNowButton}>
+              <Button variant="contained" color="primary"
+                onClick={this.joinRoom}
+                className={classes.joinNowButton}
+                startIcon = {<VoiceChatOutlinedIcon />}>
                     Join Now
               </Button>
             </Container> :
           null
-        }
+          }
 
-        <VideoBoxManager
-          ref={this.videoBoxManagerRef}
-        />
-
+          <VideoBoxManager
+            ref={this.videoBoxManagerRef}
+          />
+        </Container>
         <MediaController
           onHandleVideo={this.onHandleVideo}
           onHandleAudio={this.onHandleAudio}
           onCallEnd={this.callEnd}
         />
-
       </Container>
     );
   }
