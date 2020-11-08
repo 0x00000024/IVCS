@@ -8,10 +8,26 @@ import MicOffIcon from '@material-ui/icons/MicOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import IconButton from '@material-ui/core/IconButton';
 
+
 const styles = () => ({
   mediaController: {
-    background: 'whitesmoke',
-    textAlign: 'center',
+    position: 'absolute',
+    bottom: 0,
+    margin: 0,
+    background: '#fff',
+    borderWidth: 'medium',
+    borderColor: '#fff',
+    borderStyle: 'outset',
+    opacityStyle: 1,
+    whiteSpace: 'nowrap',
+    height: '80px',
+    maxWidth: '100%',
+    maxHeight: '100%',
+  },
+  controlButton: {
+    position: 'relative',
+    margin: '15px',
+    height: '45px',
   },
 });
 
@@ -27,41 +43,45 @@ class MediaController extends React.Component {
     };
   }
 
-    handleVideo = () => {
-      const reversedState = !this.props.video;
-      this.setState({localVideo: reversedState});
-      this.props.onHandleVideo(reversedState);
-    }
+  handleVideo = () => {
+    const reversedState = !this.state.localVideo;
+    this.setState({localVideo: reversedState});
+    this.props.onHandleVideo(reversedState);
+  }
 
-    handleAudio = () => {
-      const reversedState = !this.props.audio;
-      this.setState({localAudio: reversedState});
-      this.props.onHandleAudio(reversedState);
-    }
+  handleAudio = () => {
+    const reversedState = !this.state.localAudio;
+    this.setState({localAudio: reversedState});
+    this.props.onHandleAudio(reversedState);
+  }
 
-    render() {
-      return (
-        <Container className={this.classes.mediaController}>
+  render() {
+    const {classes} = this.props;
+    return (
+      <Container align="center" disableGutters='true'
+        className={classes.mediaController} >
 
-          <IconButton onClick={this.handleVideo}>
-            {
-            this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
-            }
-          </IconButton>
+        <IconButton onClick={this.handleVideo}
+          className={classes.controlButton}>
+          {
+            !this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
+          }
+        </IconButton>
 
-          <IconButton>
-            <CallEndIcon onClick={this.props.onCallEnd}/>
-          </IconButton>
+        <IconButton className={classes.controlButton}>
+          <CallEndIcon onClick={this.props.onCallEnd}/>
+        </IconButton>
 
-          <IconButton onClick={this.handleAudio}>
-            {
-                        this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
-            }
-          </IconButton>
+        <IconButton onClick={this.handleAudio}
+          className={classes.controlButton}>
+          {
+            !this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
+          }
+        </IconButton>
 
-        </Container>
-      );
-    }
+      </Container>
+    );
+  }
 }
 
 export default withStyles(styles)(MediaController);

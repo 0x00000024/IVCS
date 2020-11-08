@@ -9,7 +9,7 @@ const useStyles = () => ({
     background: 'white',
     width: '35%',
     height: 'auto',
-    margin: '10%',
+    margin: '10% 10%',
   },
   meetingLinkTitle: {
     margin: 0,
@@ -40,10 +40,15 @@ class MyCarousel extends React.Component {
       {
         name: 'Random Name #1',
         description: 'Probably the most random thing you have ever seen!',
+        // srcPicture: 'https://image.freepik.com/free-vector/video-conferencing-concept-landing-page_23-2148203329.jpg',
       },
       {
         name: 'Random Name #2',
         description: 'Hello World!',
+      },
+      {
+        name: 'Random Name #3',
+        description: 'Starting Video Meeting!',
       },
     ];
   }
@@ -53,7 +58,8 @@ class MyCarousel extends React.Component {
     return (
       <Carousel className={classes.carousel}>
         {
-          this.items.map((item, i) => <Item key={i} item={item}/>)
+          this.items.map((item, i) =>
+            <Item key={i} item={item} />)
         }
       </Carousel>
     );
