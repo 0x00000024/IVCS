@@ -1,34 +1,40 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import Carousel from 'react-material-ui-carousel';
 import Paper from '@material-ui/core/Paper';
 import withStyles from '@material-ui/styles/withStyles';
+import Carousel1 from './img/carousel01.jpg';
+import Carousel2 from './img/carousel02.jpg';
 
 const styles = () => ({
   carousel: {
-    background: 'white',
+    position: 'absolute',
+    display: 'block',
     width: '35%',
-    height: 'auto',
-    margin: '8% 8%',
-    maxWidth: '100%',
+    height: '50%',
+    // height: 'auto',
+    margin: '5% 5%',
+    left: '45%',
+    top: '15%',
+    float: 'left',
+    borderRadius: '15px',
+    backgroundColor: 'transparent',
+    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
+        ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
-  meetingLinkTitle: {
-    margin: 0,
-    fontWeight: 'bold',
-    paddingRight: '50px',
+
+  paperContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '90px',
   },
 });
 
 function Item(props) {
   return (
     <Paper>
-      <h2>{props.item.name}</h2>
-      <p>{props.item.description}</p>
-
-      <Button className="CheckButton">
-          Check it out!
-      </Button>
-    </Paper>
+      <img style={{width: '100%'}}
+        alt="true" src={props.item.image}/>
+    </ Paper>
   );
 }
 
@@ -39,12 +45,14 @@ class MyCarousel extends React.Component {
 
     this.items = [
       {
-        name: 'Let\'s meet at IVCS and make remote work more efficient.',
+        name: '',
         description: '',
+        image: Carousel1,
       },
       {
-        name: 'Happy every encounter.',
+        name: '',
         description: '',
+        image: Carousel2,
       },
     ];
   }

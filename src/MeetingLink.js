@@ -7,11 +7,17 @@ import withStyles from '@material-ui/styles/withStyles';
 
 const styles = () => ({
   meetingLink: {
-    background: 'white',
-    width: '35%',
+    position: 'absolute',
+    width: '30%',
     height: 'auto',
-    margin: '5% 10%',
+    margin: '5% 5%',
+    top: '60%',
+    right: '55%',
     float: 'left',
+    borderRadius: '15px',
+    backgroundColor: 'transparent',
+    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
+        ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
   meetingLinkTitle: {
     margin: 0,
@@ -20,13 +26,6 @@ const styles = () => ({
   button: {
     position: 'relative',
     margin: '10px',
-  },
-  slogan: {
-    fontSize: '1.25rem',
-    fontWeight: '400',
-    letterSpacing: 0,
-    lineHeight: '2.25rem',
-    paddingBottom: '.5em',
   },
 });
 
