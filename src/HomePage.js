@@ -1,15 +1,15 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
 import withStyles from '@material-ui/styles/withStyles';
 import MeetingLink from './MeetingLink';
 import Carousel from './Carousel';
 import NavigationBar from './NavigationBar';
-import Background from './img/poster-about.jpg';
-import Cloud1 from './img/poster-drop-animate1.png';
-import Cloud2 from './img/poster-drop-animate2.png';
+import Background from './assets/img/poster-about.jpg';
+import Cloud1 from './assets/img/poster-drop-animate1.png';
+import Cloud2 from './assets/img/poster-drop-animate2.png';
 import Paper from '@material-ui/core/Paper';
-import Slogan from './video/IVCS_Slogan.mp4';
+import Slogan from './assets/video/IVCS_Slogan.mp4';
+import Box from '@material-ui/core/Box';
 
 const styles = () => ({
   'fullScreen': {
@@ -25,7 +25,6 @@ const styles = () => ({
     maxWidth: '100%',
     maxHeight: '100%',
   },
-
   '@keyframes posterDrop1': {
     from: {backgroundPosition: '0 0'},
     to: {backgroundPosition: '4000% 0'},
@@ -34,13 +33,11 @@ const styles = () => ({
     from: {backgroundPosition: '0 0'},
     to: {backgroundPosition: '3000% 0'},
   },
-
   '@keyframes blink': {
     '20%,24%': {
       color: '#111',
       textShadow: 'none',
     },
-
     '0% 19%,23%,54%,100%': {
       textShadow: ' 0 0 5px #ffa500, 0 0 15px #ffa500,' +
           ' 0 0 20px #ffa500, 0 0 40px #ffa500,' +
@@ -48,7 +45,6 @@ const styles = () => ({
       color: '#fff6a9',
     },
   },
-
   'main': {
     backgroundImage: `url(${Cloud2})`,
     backgroundSize: 'cover',
@@ -62,7 +58,6 @@ const styles = () => ({
     maxHeight: '100%',
     overflow: 'auto',
   },
-
   'dynamicCloud': {
     backgroundImage: `url(${Cloud1})`,
     backgroundRepeat: 'repeat-x',
@@ -76,7 +71,6 @@ const styles = () => ({
     maxWidth: '100%',
     maxHeight: '100%',
   },
-
   'banner': {
     margin: '1%',
     fontWeight: 'bold',
@@ -86,7 +80,6 @@ const styles = () => ({
     color: '#fff6a9',
     animation: '$blink 15s linear infinite alternate',
   },
-
   'slogan': {
     position: 'absolute',
     width: '20%',
@@ -101,7 +94,6 @@ const styles = () => ({
     boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
         ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
-
   'sloganVideo': {
     position: 'absolute',
     display: 'flex',
@@ -115,26 +107,40 @@ const styles = () => ({
 });
 
 class HomePage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.classes = this.props.classes;
+  }
+
   render() {
-    const classes = this.props.classes;
     return (
-      <Container disableGutters={true} className={classes.fullScreen}>
-        <Container disableGutters={true} className={classes.dynamicCloud} />
-        <Container disableGutters={true} component="main" align="center"
-          className={classes.main}>
-          <NavigationBar/>
+      <Box className={this.classes.fullScreen}>
+
+        <Box className={this.classes.dynamicCloud} />
+
+        <Box component="main" align="center"
+          className={this.classes.main}>
+
+          <NavigationBar />
+
           <Typography variant="h4" component="h4" align="center"
-            className={classes.banner}>
+            className={this.classes.banner}>
               IVCS (Instant Video Conferencing Service)
           </Typography>
-          <Paper align="center" className={classes.slogan}>
-            <video className={classes.sloganVideo}
+
+          <Paper align="center" className={this.classes.slogan}>
+            <video className={this.classes.sloganVideo}
               autoPlay loop="loop" src={Slogan} />
           </Paper>
+
           <MeetingLink />
+
           <Carousel />
-        </Container>
-      </Container>
+
+        </Box>
+
+      </Box>
     );
   }
 }
