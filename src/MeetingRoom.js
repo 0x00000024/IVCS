@@ -10,11 +10,10 @@ import io from 'socket.io-client';
 import MediaController from './MediaController';
 import NavigationBar from './NavigationBar';
 import VoiceChatOutlinedIcon from '@material-ui/icons/VoiceChatOutlined';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import ChatRoom from './ChatRoom';
 import PropTypes from 'prop-types';
-import BlackGround from './assets/img/dark-honeycomb.png';
+import Box from '@material-ui/core/Box';
+
 const styles = () => ({
   mainRoom: {
     position: 'fixed',
@@ -25,62 +24,34 @@ const styles = () => ({
     height: '100%',
     maxWidth: '100%',
     maxHeight: '100%',
-    backgroundColor: '#000',
-    backgroundImage: `url(${BlackGround})`,
-    backgroundRepeat: 'repeat',
   },
   meetingRoom: {
-    position: 'absolute',
-    display: 'block',
-    pointerEvents: 'auto',
-    top: 0,
+    position: 'relative',
     margin: 0,
+    backgroundColor: '#FFFFFF',
     width: '100%',
-    height: '100%',
+    height: '80%',
     maxWidth: '100%',
     maxHeight: '100%',
     overflow: 'hidden',
   },
-  title: {
-    height: '20%',
-  },
   joinNowContainer: {
     position: 'relative',
-    top: '25%',
-    width: '30%',
-    height: '50%',
-    borderRadius: '15px',
-    backgroundSize: '100% 100%',
-    backgroundColor: 'transparent',
-    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
-        ' 0px 0px 10px rgba(0,0,0,0.15)',
+    background: '#FFFFFF',
+    width: '35%',
+    height: '30%',
+  },
+  title: {
+    marginTop: '50px',
+    marginBottom: '50px',
   },
   joinNowButton: {
-    position: 'absolute',
-    margin: 'auto 0',
-    top: '60%',
-    left: 0,
-    textAlign: 'center',
-    zIndex: 999,
-    borderRadius: '15px',
-    backgroundSize: '100% 100%',
-    backgroundColor: 'transparent',
-    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
-        ' 0px 0px 10px rgba(0,0,0,0.15)',
+    position: 'relative',
+    margin: 'auto',
   },
   inputText: {
-    position: 'absolute',
+    position: 'relative',
     margin: '20px 10px',
-    top: '30%',
-    left: '25%',
-    right: '25%',
-    zIndex: 999,
-    justifyContent: 'inherit',
-    borderRadius: '5px',
-    backgroundSize: '100% 100%',
-    backgroundColor: 'transparent',
-    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
-        ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
 });
 
@@ -125,6 +96,7 @@ class MeetingRoom extends React.Component {
     this.userProfilePictureUrl = null;
 
     this.state = {
+      permissionDenied: false,
       joined: false,
       video: false,
       audio: false,
@@ -140,10 +112,11 @@ class MeetingRoom extends React.Component {
   }
 
   getRemoteMedia = async () => {
-    // once remote stream arrives, show it in the remote video element
+    // Once remote stream arrives, show it in the remote video element
     this.userList.forEach((user) => {
       const userId = user.userId;
       if (userId === this.userId) return;
+      this.videoBoxManagerRef.current.addVideoBox(userId);
       this.rtcPeerConn[userId].ontrack = (event) => {
         this.videoBoxManagerRef.current.handleTrack(userId, event.track);
 
@@ -296,15 +269,15 @@ class MeetingRoom extends React.Component {
               this.sender[lastUserId] = {};
               if (this.localAudioTrack) {
                 this.sender[lastUserId]['audioTrack'] =
-                    this.rtcPeerConn[lastUserId]
-                        .addTrack(this.localAudioTrack,
-                            this.localStream);
+                            this.rtcPeerConn[lastUserId]
+                                .addTrack(this.localAudioTrack,
+                                    this.localStream);
               }
               if (this.localVideoTrack) {
                 this.sender[lastUserId]['videoTrack'] =
-                    this.rtcPeerConn[lastUserId]
-                        .addTrack(this.localVideoTrack,
-                            this.localStream);
+                            this.rtcPeerConn[lastUserId]
+                                .addTrack(this.localVideoTrack,
+                                    this.localStream);
               }
             }
           });
@@ -335,14 +308,22 @@ class MeetingRoom extends React.Component {
         .catch((e) => console.log(e));
   }
 
-  joinRoom = () => this.setState({joined: true}, () => {
+  joinRoom = () => {
     this.localVideo = true;
     this.localAudio = true;
-    this.navigationBarRef.current.hideLoginIcon();
     this.getLocalMedia()
-        .then(() => this.connectServer())
+        .then(() => {
+          if (!this.localStream) {
+            this.setState({permissionDenied: true});
+          } else {
+            this.setState({permissionDenied: false});
+            this.setState({joined: true});
+            this.navigationBarRef.current.hideLoginIcon();
+            this.connectServer();
+          }
+        })
         .catch((e) => console.log(e));
-  });
+  }
 
   resendSdpSignalToServer = () => {
     this.userList.forEach((user) => {
@@ -508,41 +489,48 @@ class MeetingRoom extends React.Component {
 
   render() {
     return (
-      <Container className={this.classes.mainRoom} disableGutters={true}>
+      <Box className={this.classes.mainRoom}>
+
         <NavigationBar
           ref={this.navigationBarRef}
           onUpdateUserProfile={this.onUpdateUserProfile}
         />
-        <Container className={this.classes.meetingRoom} disableGutters={true}>
+
+        {
+          this.state.permissionDenied ?
+              <Typography align="center" color="primary" variant="h2">
+                <br /><br />IVCS needs to use your microphone and camera.<br />
+                <br />Select Allow when your browser asks for permissions.<br />
+              </Typography> : null
+        }
+
+        <Box className={this.classes.meetingRoom}>
           {
-              !this.state.joined ?
-                  <Container align="center"
-                    className={this.classes.joinNowContainer}>
-                    <Typography align="center" color="primary"
-                      variant="h2" className={this.classes.title}>
+            this.state.joined || this.state.permissionDenied ? null :
+                <Container align="center"
+                  className={this.classes.joinNowContainer}>
+                  <Box className={this.classes.title}>
+                    <Typography align="center" color="primary" variant="h2">
                       IVCS
                     </Typography>
-                    <Input align="center"
-                      startAdornment={
-                        <InputAdornment position="start">
-                          <AccountCircle color='primary'/>
-                        </InputAdornment> }
-                      onChange={(e) => this.changeUsername(e)}
-                      placeholder="username"
-                      value={this.state.username}
-                      className={this.classes.inputText}
-                    />
-                    <Button variant="contained" color="primary"
-                      fullWidth = "true"
-                      className={this.classes.joinNowButton}
-                      startIcon={<VoiceChatOutlinedIcon />}
-                      onClick={this.joinRoom}>
-                      Join Now
-                    </Button>
-                  </Container> : null
+                  </Box>
+                  <Input
+                    onChange={(e) => this.changeUsername(e)}
+                    placeholder="username"
+                    value={this.state.username}
+                    className={this.classes.inputText}
+                  />
+                  <Button variant="contained" color="primary"
+                    className={this.classes.joinNowButton}
+                    startIcon={<VoiceChatOutlinedIcon />}
+                    onClick={this.joinRoom}>
+                    Join Now
+                  </Button>
+                </Container>
           }
           <VideoBoxManager ref={this.videoBoxManagerRef} />
-        </Container>
+        </Box>
+
         <ChatRoom
           ref={this.chatRoomRef}
           onSendMessage={this.onSendMessage}
@@ -551,19 +539,19 @@ class MeetingRoom extends React.Component {
         />
 
         {
-            this.state.joined ?
-                <MediaController
-                  ref={this.mediaControllerRef}
-                  onHandleVideo={this.onHandleCamera}
-                  onHandleAudio={this.onHandleAudio}
-                  onHandleScreen={this.onHandleScreen}
-                  onOpenChatRoom={this.onOpenChatRoom}
-                  onCallEnd={this.callEnd}
-                /> :
-                null
+          this.state.joined ?
+              <MediaController
+                ref={this.mediaControllerRef}
+                onHandleVideo={this.onHandleCamera}
+                onHandleAudio={this.onHandleAudio}
+                onHandleScreen={this.onHandleScreen}
+                onOpenChatRoom={this.onOpenChatRoom}
+                onCallEnd={this.callEnd}
+              /> :
+              null
         }
 
-      </Container>
+      </Box>
     );
   }
 }
