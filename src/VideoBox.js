@@ -5,16 +5,24 @@ const styles = () => ({
     background: '#303BA6',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
+    position: 'relative',
     display: 'flex',
     padding: '5px',
     width: '300px',
     height: '225px',
+    top: '25%',
     marginTop: '10px',
     marginBottom: '10px',
     marginLeft: '20px',
     marginRight: '20px',
     lineHeight: '225px',
     textAlign: 'center',
+
+    borderRadius: '15px',
+    backgroundSize: '100% 100%',
+    backgroundColor: 'transparent',
+    boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
+        ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
 });
 
@@ -89,7 +97,7 @@ class VideoBox extends React.Component {
 
   render() {
     return (
-      this.state.dismiss ? null :
+        this.state.dismiss ? null :
             <video
               className={this.classes.videoBox}
               ref={this.videoRef}

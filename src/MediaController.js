@@ -15,6 +15,7 @@ import StopScreenShareIcon from '@material-ui/icons/StopScreenShare';
 const styles = () => ({
   mediaController: {
     position: 'absolute',
+    boxSizing: 'border-box',
     bottom: 0,
     margin: 0,
     boxShadow: '0 0 10px 10px rgba(255, 255, 255, .6)',
@@ -23,9 +24,9 @@ const styles = () => ({
     borderColor: '#ffffff',
     borderStyle: 'outset',
     borderRadius: '10px',
-    opacityStyle: 1,
     whiteSpace: 'nowrap',
     height: '80px',
+    width: '100%',
     maxWidth: '100%',
     maxHeight: '100%',
   },
@@ -102,13 +103,13 @@ class MediaController extends React.Component {
 
   render() {
     return (
-      <Container disableGutters="true" align="center"
+      <Container disableGutters={true} align="center"
         className={this.classes.mediaController} >
 
         <IconButton onClick={this.handleVideo}
           className={this.classes.controlButton}>
           {
-            this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
+              this.state.localVideo ? <VideocamIcon/> : <VideocamOffIcon/>
           }
         </IconButton>
 
@@ -119,30 +120,30 @@ class MediaController extends React.Component {
         <IconButton onClick={this.handleAudio}
           className={this.classes.controlButton}>
           {
-            this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
+              this.state.localAudio ? <MicIcon/> : <MicOffIcon/>
           }
         </IconButton>
 
         <IconButton onClick={this.handleScreen}
           className={this.classes.controlButton}>
           {
-            this.state.localScreen ?
-                <ScreenShareIcon /> :
-                <StopScreenShareIcon />
+              this.state.localScreen ?
+                  <ScreenShareIcon /> :
+                  <StopScreenShareIcon />
           }
         </IconButton>
 
         {
-          !this.state.showChatRoom ?
-              <Badge badgeContent={this.state.numberOfNewMessages} max={999}
-                color="secondary" onClick={this.openChatRoom}
-              >
-                <IconButton onClick={this.openChatRoom}
-                  className={this.classes.controlButton}
+            !this.state.showChatRoom ?
+                <Badge badgeContent={this.state.numberOfNewMessages} max={999}
+                  color="secondary" onClick={this.openChatRoom}
                 >
-                  <ChatIcon />
-                </IconButton>
-              </Badge> : null
+                  <IconButton onClick={this.openChatRoom}
+                    className={this.classes.controlButton}
+                  >
+                    <ChatIcon />
+                  </IconButton>
+                </Badge> : null
         }
 
       </Container>

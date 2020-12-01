@@ -12,8 +12,10 @@ import Box from '@material-ui/core/Box';
 const styles = () => ({
   root: {
     flexGrow: 1,
-    top: 0,
-    margin: 0,
+    // position: 'absolute',
+    position: 'relative',
+    display: 'flex',
+    height: 'auto',
     width: '100%',
     maxWidth: '100%',
     backgroundColor: 'transparent',
@@ -21,9 +23,11 @@ const styles = () => ({
         ' 0px 0px 10px rgba(0,0,0,0.15)',
   },
   menuButton: {
+    zIndex: 999,
     left: 0,
   },
   accountButton: {
+    zIndex: 999,
     position: 'absolute',
     right: 0,
   },
