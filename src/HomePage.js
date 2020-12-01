@@ -24,8 +24,6 @@ const styles = () => ({
     maxWidth: '100%',
     maxHeight: '100%',
     overflow: 'hidden',
-    // overflow: 'auto',
-    // overflowY: 'scroll',
   },
   '@keyframes posterDrop1': {
     from: {backgroundPosition: '0 0'},
@@ -58,8 +56,6 @@ const styles = () => ({
     'height': '50%',
     'maxWidth': '100%',
     'minHeight': '100%',
-    // overflow: 'hidden',
-    // overflowY: 'visible',
     'overflow': 'auto',
     '&::-webkit-scrollbar': {
       width: '0.4em',
@@ -116,19 +112,20 @@ const styles = () => ({
   },
   'gridRoot': {
     'flexGrow': 1,
+    'padding': '20px',
+    'overflowX': 'hidden',
+    'overflowY': 'auto',
+    'width': '100%',
+    'height': 'calc(100% - 64px);',
     'position': 'relative',
     'display': 'flex',
     'overflow': 'auto',
-    'width': '100%',
-    'height': '100%',
     'flexWrap': 'wrap',
-    'padding': '20px',
-    'maxHeight': '100%',
-    'minHeight': '100%',
     '&::-webkit-scrollbar': {
-      width: '0.4em',
+      width: '0.5em',
     },
     '&::-webkit-scrollbar-track': {
+      margin: '3px 0',
       boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
       webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
     },
@@ -138,7 +135,7 @@ const styles = () => ({
       border: 'none',
       boxShadow: 'none',
       background: '#dadce0',
-      borderRadius: '8px',
+      borderRadius: '4px',
       minHeight: '40px',
     },
   },
@@ -152,22 +149,9 @@ const styles = () => ({
   'gridElement': {
     padding: '20px',
   },
-
   'gridCarousel': {
     padding: '20px',
-    // ['@media screen and (max-aspect-ratio: 1/2),' +
-    // ' only screen and (max-width: 40rem)']: {
-    //   paddingBottom: '50px',
-    // },
   },
-  // ['@media screen and (max-aspect-ratio: 3/4),' +
-  // ' only screen and (max-width: 45rem)'
-  //     .sloganVideo]: {
-  //   flexBasis: 'auto',
-  //   flexShrink: '0',
-  //   maxWidth: '39rem',
-  //   width: '100%',
-  // },
 });
 
 class HomePage extends React.Component {

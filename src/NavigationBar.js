@@ -10,14 +10,22 @@ import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 
 const styles = () => ({
+  head: {
+    position: 'relative',
+    display: 'block',
+    minWidth: '320px',
+    width: '100%',
+  },
   root: {
     flexGrow: 1,
-    // position: 'absolute',
+    flexShrink: 0,
+    flexBasis: 'auto',
+    height: '56px',
     position: 'relative',
+    padding: '8px',
     display: 'flex',
-    height: 'auto',
+    boxSizing: 'border-box',
     width: '100%',
-    maxWidth: '100%',
     backgroundColor: 'transparent',
     boxShadow: 'inset 0px 3px 5px rgba(255,255,255,0.5),' +
         ' 0px 0px 10px rgba(0,0,0,0.15)',
@@ -65,7 +73,7 @@ class NavigationBar extends React.Component {
 
   render() {
     return (
-      <Box className={this.classes.root}>
+      <Box className={this.classes.head}>
         <AppBar position="static" className={this.classes.root}>
           <Toolbar variant="dense">
             <IconButton

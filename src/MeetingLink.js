@@ -4,6 +4,11 @@ import VideoCallRoundedIcon from '@material-ui/icons/VideoCallRounded';
 import withStyles from '@material-ui/styles/withStyles';
 
 const styles = () => ({
+  buttonContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignSelf: 'flex-start',
+  },
   meetingLinkTitle: {
     margin: 0,
     fontWeight: 'bold',

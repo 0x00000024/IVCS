@@ -18,7 +18,7 @@ const styles = () => ({
   },
   paper: {
     width: '100%',
-    height: 'auto',
+    height: '100%',
     objectFit: 'fill',
     borderRadius: '15px',
     backgroundColor: 'transparent',
@@ -28,10 +28,10 @@ const styles = () => ({
   img: {
     width: '450px',
     height: '280px',
-    // objectFit: 'fill',
+    objectFit: 'fill',
     ['@media screen and (max-aspect-ratio: 1/2),' +
     ' only screen and (max-width: 35rem)']: {
-      width: '450px',
+      width: '360px',
       height: '280px',
     },
   },
